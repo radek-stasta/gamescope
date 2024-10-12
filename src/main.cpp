@@ -1,3 +1,5 @@
+#include "Script/Script.h"
+
 #include <X11/Xlib.h>
 
 #include <cstdio>
@@ -609,9 +611,6 @@ static void UpdateCompatEnvVars()
 	// Don't minimise stuff on focus loss with SDL.
 	setenv( "SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS", "0", 1 );
 
-	// A sane default here.
-	setenv( "GAMESCOPE_NV12_COLORSPACE", "k_EStreamColorspace_BT601", 0 );
-
 	const char *pszMangoConfigPath = getenv( "MANGOHUD_CONFIGFILE" );
 	if ( (g_bLaunchMangoapp && steamMode) && ( !pszMangoConfigPath || !*pszMangoConfigPath ) )
 	{
@@ -806,6 +805,11 @@ int main(int argc, char **argv)
 	if ( gpuvis_trace_init() != -1 )
 	{
 		fprintf( stderr, "Tracing is enabled\n");
+	}
+
+	{
+		gamescope::CScriptScopedLock script;
+		script.Manager().RunDefaultScripts();
 	}
 
 	XInitThreads();
